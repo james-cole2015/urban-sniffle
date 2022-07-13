@@ -18,5 +18,5 @@ This is a script that will download and install Terraform and AWS CLI
 
 ### JDK & Jenkins Install
 
-### [jenkins_install.sh](https://github.com/james-cole2015/urban-sniffle/blob/main/jenkins_install.sh) 
+### [jenkins_install.sh](https://raw.githubusercontent.com/james-cole2015/urban-sniffle/main/jenkins_install.sh) 
 This is a script that will download and install the latest version of JDK and Jenkins as well as install on host. 
