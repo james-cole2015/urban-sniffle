@@ -1,5 +1,6 @@
 #!/bin/bash
 apt-get update -y
+sudo apt install git-all -y
 apt-get install -y apache2
 systemctl start apache2
 git clone https://github.com/james-cole2015/wrecked-machine.git
