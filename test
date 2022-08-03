@@ -1,2 +1,3 @@
 #!/bin/bash
 mkdir this_is_a_test
+#PS1="\e[0;37m[node02@\h \W]\$ \e[0m"
