@@ -40,7 +40,7 @@ provisioner "shell" {
 provisioner "shell" {
     inline = [
         "echo Installing AWS CLI",
-        "sleep 30",
+        "sleep 10",
         "curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip",
         "unzip awscliv2.zip",
         "sudo ./aws/install",
@@ -49,7 +49,7 @@ provisioner "shell" {
 provisioner "shell" {
     inline = [
         "echo Installing vim rc",
-        "sleep 30",
+        "sleep 10",
         "curl https://raw.githubusercontent.com/linuxacademy/content-hashicorp-packer/master/env/vimrc -o ~/.vimrc",
     ]
 }
