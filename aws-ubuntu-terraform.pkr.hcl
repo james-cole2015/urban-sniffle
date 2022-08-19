@@ -15,15 +15,7 @@ source "amazon-ebs" "ubuntu" {
     ami_name = "terraform-image-${local.timestamp}"
     instance_type = "t2.small" 
     region = "us-east-1" 
-    source_ami_filter {
-        filters = {
-            name = "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"
-            root-device-type = "ebs" 
-            virtualization-type = "hvm" 
-        }
-        most_recent = true 
-        owners = ["099720109477"]
-    }
+    source_ami = "ami-08d4ac5b634553e16"
     ssh_username = "ubuntu"
 }
 
