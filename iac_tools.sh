@@ -1,3 +1,6 @@
+#########################
+#### Start Up Script ####
+#########################
 #!/bin/bash
 
 apt install curl unzip -y
