@@ -1,0 +1,32 @@
+---
+    - hosts: terraform_controller
+      name: iac_tools and setup
+      become: yes
+      tasks:
+      - name: installing unzip
+        apt:
+          package: unzip
+          state: present
+      - name: updating apt
+        apt:
+            update_cache: yes
+      - name: create github directory
+        file:
+          path: /home/ubuntu/github
+          state: directory
+      - name: download script from github
+        get_url:
+          dest: /home/ubuntu/iac-tools.sh
+          url: https://raw.githubusercontent.com/james-cole2015/urban-sniffle/main/iac_tools.sh
+      - name: changing permissions of file +x
+        file:
+          path: /home/ubuntu/iac-tools.sh
+          state: file
+          owner: ubuntu
+          group: ubuntu
+        file:
+          dest: /home/ubuntu/iac-tools.sh
+          mode: +x
+      - name: executing script
+        command: ./iac-tools.sh
+    
