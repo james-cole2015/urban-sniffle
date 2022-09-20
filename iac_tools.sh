@@ -1,9 +1,6 @@
-#########################
-#### Start Up Script ####
-#########################
 #!/bin/bash
 
-apt install curl unzip -y
+#apt install curl unzip -y
 
 ##Installing Terraform
 sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
