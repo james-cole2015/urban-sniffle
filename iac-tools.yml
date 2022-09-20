@@ -29,4 +29,11 @@
           mode: +x
       - name: executing script
         command: ./iac-tools.sh
+      - name: cleaning up script 
+        file: 
+          path: /home/ubuntu/iac-tools.sh
+          state: absent
+
+## future updates: 
+# - create conditional for packages and run script if not installed
     
