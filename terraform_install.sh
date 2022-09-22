@@ -16,6 +16,9 @@ curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
 sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" -y
 sudo apt-get update && sudo apt-get install terraform -y
 
+## Validating install ##
+terraform -verison 
+
 ########################################################
 ##  ____            _ _              _____       _    ##
 ## |  _ \ __ _ _ __(_) |_ __ _ _ __ | ____|_ __ | |_  ##
