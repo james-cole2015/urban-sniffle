@@ -1,0 +1,13 @@
+---
+- hosts: dev-test
+  name: package-remover
+  become: yes
+  vars: 
+    package_names: 
+    - figlet
+  tasks:
+  - name: "removing package"
+    apt:
+      name: "{{ item }}"
+      state: absent
+    loop: "{{ package_names }}"
