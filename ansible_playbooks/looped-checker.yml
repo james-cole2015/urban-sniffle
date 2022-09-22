@@ -1,0 +1,27 @@
+---
+- hosts: dev-test
+  name: package-checker
+  become: yes
+  vars: 
+    package_names: 
+    - figlet
+    - cowsay
+    - vault 
+    - vim 
+    - terraform 
+    - awscli  
+  tasks: 
+    - name: check if package is installed 
+      package_facts: 
+        manager: "auto" 
+    - name: "results"
+      debug: 
+          msg: "{{ item }} is found"
+      loop: "{{ package_names }}"
+      when: "item in ansible_facts.packages"
+
+    - name: "results not found"
+      debug: 
+          msg: "{{ item }} is not found" 
+      when: "not item in ansible_facts.packages"
+      loop: "{{ package_names }}"
