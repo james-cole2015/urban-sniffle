@@ -3,6 +3,7 @@
 ############################
 
 #!/bin/bash
+apt-get update 
 apt install unzip -y
 curl https://releases.hashicorp.com/vault/1.11.3/vault_1.11.3_linux_amd64.zip /tmp/vault.zip
 mkdir /usr/local/vault
