@@ -1,7 +1,7 @@
 ---
 - hosts: dev-test
   name: package-checker
-  become: yes
+  #become: yes
   vars: 
     package_names: 
     - figlet
@@ -9,7 +9,7 @@
     - vault 
     - vim 
     - terraform 
-    - awscli  
+    - aws
   tasks: 
     - name: check if package is installed 
       package_facts: 
@@ -25,3 +25,27 @@
           msg: "{{ item }} is not found" 
       when: "not item in ansible_facts.packages"
       loop: "{{ package_names }}"
+
+   # - name: install figlet 
+   #   apt: 
+   #     name: figlet
+   #     state: present 
+   #   when: not "figlet" in ansible_facts.packages
+    - block:
+      - name: create test directory
+        file: 
+          path: ~/test_dir
+          state: directory
+      - name: download script from github
+        get_url:
+          dest: ~/test_dir/vault.sh
+          url: https://raw.githubusercontent.com/james-cole2015/urban-sniffle/main/vault_script.sh
+      - name: chmod +x vault.sh
+        file: 
+          path: ~/test_dir/vault.sh
+          mode: +x 
+      - name: execute vault script
+        command: bash ./home/ubuntu/test_dir/vault.sh
+        become: yes
+      when: not "vault" in ansible_facts.packages
+
