@@ -1,0 +1,19 @@
+
+---
+- hosts: dev-test 
+  name: Terraform 1.3.1 Playbook
+  become: yes
+  tasks: 
+  - name: install zip utility
+    apt:
+      package: unzip
+      state: present
+  - name: download terraform binary 
+    get_url: 
+      dest: /tmp/terraform.zip 
+      url: https://releases.hashicorp.com/terraform/1.3.1/terraform_1.3.1_linux_amd64.zip
+  - name: unzip terraform files
+    unarchive: 
+      src: /tmp/terraform.zip
+      dest: /usr/bin
+      remote_src: yes 
