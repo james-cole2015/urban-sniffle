@@ -36,16 +36,14 @@
         file: 
           path: ~/test_dir
           state: directory
-      - name: download script from github
-        get_url:
-          dest: ~/test_dir/vault.sh
-          url: https://raw.githubusercontent.com/james-cole2015/urban-sniffle/main/vault_script.sh
-      - name: chmod +x vault.sh
-        file: 
-          path: ~/test_dir/vault.sh
-          mode: +x 
-      - name: execute vault script
-        command: bash ./home/ubuntu/test_dir/vault.sh
-        become: yes
-      when: not "vault" in ansible_facts.packages
+      - name: download vault zip 
+        get_url: 
+          dest: ~/test_dir/vault.zip
+          url: https://releases.hashicorp.com/vault/1.11.3/vault_1.11.3_linux_amd64.zip
+      - name: 
+        unarchive:
+          src: /tmp/vault.zip 
+          dest: /usr/local/bin 
+          remote_src: yes 
+      when: not "vault" in ansible_facts.packages 
 
