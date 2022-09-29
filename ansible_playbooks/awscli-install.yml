@@ -1,0 +1,20 @@
+---
+- hosts: dev-test
+  name: AWS CLI Install 
+  become: yes
+  tasks: 
+  - name: installing zip utility 
+    apt: 
+      name: unzip 
+      state: present
+  - name: downloading zip file from AWS
+    get_url: 
+      url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+      dest: /home/ubuntu/awscli2.zip 
+  - name: unzip files 
+    unarchive: 
+      src: awscli2.zip
+      dest: /tmp
+      remote_src: yes
+  - name: install aws cli 
+    command: sh /tmp/aws/install 
