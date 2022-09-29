@@ -6,7 +6,7 @@
   6   - name: insert command prompt change to bashrc
   7     lineinfile:
   8       path: /home/ubuntu/.bashrc
-  9       line: PS1="\e[0;37m[main_tf_controller@\h \W]\$ \e[0m"
+  9       line: PS1="\e[0;37m[prod_tf_controller@\h \W]\$ \e[0m"
  10   - name: source bashrc
  11     shell: source /home/ubuntu/.bashrc && source ~/.bashrc
  12     args:
