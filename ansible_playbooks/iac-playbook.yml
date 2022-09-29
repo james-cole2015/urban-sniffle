@@ -1,0 +1,10 @@
+---
+- hosts: terraform_controller
+  tasks: 
+
+- name: terraform playbook
+  import_playbook: terraform-install.yml
+- name: vault playbook
+  import_playbook: vault-install.yml
+- name: aws cli playbook
+  import_playbook: awscli-install.yml
