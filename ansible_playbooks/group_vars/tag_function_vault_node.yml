@@ -1,0 +1,3 @@
+# variables for vault_node group tags
+---
+ansible_ssh_private_key_file: ~/github/stunning-invention/aware-finch-tf_key.pem
