@@ -1,13 +1,13 @@
-  1 ---
-  2 - hosts: dev-test
-  3   name: test command prompt change
-  4   become: yes
-  5   tasks:
-  6   - name: insert command prompt change to bashrc
-  7     lineinfile:
-  8       path: /home/ubuntu/.bashrc
-  9       line: PS1="\e[0;37m[prod_tf_controller@\h \W]\$ \e[0m"
- 10   - name: source bashrc
- 11     shell: source /home/ubuntu/.bashrc && source ~/.bashrc
- 12     args:
- 13        executable: /bin/bash
+---
+  - hosts: dev-test
+    name: test command prompt change
+    become: yes
+    tasks:
+     - name: insert command prompt change to bashrc
+       lineinfile:
+         path: /home/ubuntu/.bashrc
+         line: PS1="\e[0;37m[prod_tf_controller@\h \W]\$ \e[0m"
+     - name: source bashrc
+       shell: source /home/ubuntu/.bashrc && source ~/.bashrc
+       args:
+         executable: /bin/bash
