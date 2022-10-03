@@ -1,5 +1,5 @@
 ---
-  - hosts: dev-test
+  - hosts: tag_function_vault_node
     name: test command prompt change
     become: yes
     tasks:

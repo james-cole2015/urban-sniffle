@@ -1,5 +1,5 @@
 ---
-- hosts: terraform_controller
+- hosts: tag_function_vault_node
   tasks: 
 
 - name: terraform playbook
@@ -8,3 +8,5 @@
   import_playbook: vault-install.yml
 - name: aws cli playbook
   import_playbook: awscli-install.yml
+- name: command prompt change
+  import_playbook: commandPrompt.yml 

@@ -1,5 +1,5 @@
 ---
-- hosts: dev-test
+- hosts: tag_function_vault_node
   name: AWS CLI Install 
   become: yes
   tasks: 

@@ -1,4 +1,4 @@
-- hosts: dev-test 
+- hosts: tag_function_vault_node
   become: yes
   name: Vault Playbook
   tasks: 
