@@ -115,3 +115,4 @@ Resources:
           SubnetId: !Ref PublicSubnet
           GroupSet:
             - !Ref SecurityGroup
+        - AssociatePublicIpAddress: "true"
