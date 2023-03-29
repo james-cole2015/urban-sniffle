@@ -1,135 +1,27 @@
-Parameters:
-  VpcCidr:
-    Type: String
-    Default: "10.0.0.0/16"
-  PublicSubnetCidr:
-    Type: String
-    Default: "10.0.1.0/24"
-  PrivateSubnetCidr:
-    Type: String
-    Default: "10.0.2.0/24"
-  NatEIP:
-    Type: "AWS::EC2::EIP::Id"
-  PublicSG:
-    Type: "AWS::EC2::SecurityGroup::Id"
-  PrivateSG:
-    Type: "AWS::EC2::SecurityGroup::Id"
-
+---
 Resources:
-  MyVPC:
-    Type: "AWS::EC2::VPC"
+  VPC:
+    Type: 'AWS::EC2::VPC'
     Properties:
-      CidrBlock: !Ref VpcCidr
-      EnableDnsHostnames: true
-
+      CidrBlock: '12.0.0.0/16'
+      Tags:
+        - Key: Name
+          Value: week-1-vpc
   PublicSubnet:
-    Type: "AWS::EC2::Subnet"
+    Type: 'AWS::EC2::Subnet'
     Properties:
-      VpcId: !Ref MyVPC
-      CidrBlock: !Ref PublicSubnetCidr
-      AvailabilityZone: !Select [ 0, !GetAZs "" ]
-      MapPublicIpOnLaunch: true
-
+      VpcId: !Ref VPC
+      CidrBlock: '12.0.0.0/24'
+      AvailabilityZone: us-east-1a
+      Tags:
+        - Key: Name
+          Value: public-subnet-00
   PrivateSubnet:
-    Type: "AWS::EC2::Subnet"
+    Type: 'AWS::EC2::Subnet'
     Properties:
-      VpcId: !Ref MyVPC
-      CidrBlock: !Ref PrivateSubnetCidr
-      AvailabilityZone: !Select [ 0, !GetAZs "" ]
-
-  InternetGateway:
-    Type: "AWS::EC2::InternetGateway"
-
-  GatewayAttachment:
-    Type: "AWS::EC2::VPCGatewayAttachment"
-    Properties:
-      VpcId: !Ref MyVPC
-      InternetGatewayId: !Ref InternetGateway
-
-  PublicRouteTable:
-    Type: "AWS::EC2::RouteTable"
-    Properties:
-      VpcId: !Ref MyVPC
-
-  PublicRoute:
-    Type: "AWS::EC2::Route"
-    DependsOn: GatewayAttachment
-    Properties:
-      RouteTableId: !Ref PublicRouteTable
-      DestinationCidrBlock: "0.0.0.0/0"
-      GatewayId: !Ref InternetGateway
-
-  PrivateRouteTable:
-    Type: "AWS::EC2::RouteTable"
-    Properties:
-      VpcId: !Ref MyVPC
-
-  PrivateRoute:
-    Type: "AWS::EC2::Route"
-    DependsOn: NatGateway
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable
-      DestinationCidrBlock: "0.0.0.0/0"
-      NatGatewayId: !Ref NatGateway
-
-  NatGateway:
-    Type: "AWS::EC2::NatGateway"
-    Properties:
-      AllocationId: !Ref NatEIP
-      SubnetId: !Ref PublicSubnet
-
-  PublicSecurityGroup:
-    Type: "AWS::EC2::SecurityGroup"
-    Properties:
-      GroupDescription: "Public Security Group"
-      VpcId: !Ref MyVPC
-
-  PublicSecurityGroupIngress:
-    Type: "AWS::EC2::SecurityGroupIngress"
-    Properties:
-      GroupId: !Ref PublicSecurityGroup
-      IpProtocol: "tcp"
-      FromPort: 22
-      ToPort: 22
-      CidrIp: "0.0.0.0/0"
-
-  PrivateSecurityGroup:
-    Type: "AWS::EC2::SecurityGroup"
-    Properties:
-      GroupDescription: "Private Security Group"
-      VpcId: !Ref MyVPC
-      IpProtocol: "tcp"
-      FromPort: 22
-      ToPort: 22
-      CidrIp: "0.0.0.0/0"
-
-
-  PrivateSecurityGroupIngress:
-    Type: "AWS::EC2::SecurityGroupIngress"
-    Properties:
-      GroupId: !Ref PrivateSG
-      IpProtocol: "tcp"
-      FromPort: 22
-      ToPort: 22
-      CidrIp: "0.0.0.0/0"
-
-#  PrivateSecurityGroupEgress:
-#    Type: "AWS::EC2::SecurityGroupEgress"
-#    Properties:
-#      GroupId: !Ref PrivateSG
-#      IpProtocol: "tcp"
-#      FromPort: 0
-#      ToPort: 65535
-#      DestinationSecurityGroupId: !Ref PublicSG
-
-Outputs:
-  PublicSubnetId:
-    Value: !Ref PublicSubnet
-  PrivateSubnetId:
-    Value: !Ref PrivateSubnet
-  PublicSecurityGroupId:
-    Value: !Ref PublicSG
-  PrivateSecurityGroupId:
-    Value: !Ref PrivateSG
-  NatGatewayId:
-    Value: !Ref NatGateway
+      VpcId: !Ref VPC
+      CidrBlock: '12.0.1.0/24'
+      AvailabilityZone: us-east-1b
+      Tags:
+        - Key: Name
+          Value: private-subnet-00
