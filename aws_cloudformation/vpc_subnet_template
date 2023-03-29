@@ -108,10 +108,10 @@ Resources:
       InstanceType: t2.micro
       KeyName: my-key-pair
       Tags: 
-        - Key: Name
-          Value: Public RHEL 9
-        - Key: Environment
-          Value: cloudformation
+        - Key: "Name"
+          Value: "Public_RHEL_9"
+        - Key: "Environment"
+          Value: "cloudformation"
       NetworkInterfaces:
         - DeviceIndex: '0'
           SubnetId: !Ref PublicSubnet
