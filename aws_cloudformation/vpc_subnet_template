@@ -1,103 +1,88 @@
 Parameters:
-  VpcCidrBlock:
-    Description: CIDR block for the VPC
+  VpcCidr:
     Type: String
     Default: "10.0.0.0/16"
-
-  PublicSubnetCidrBlock:
-    Description: CIDR block for the public subnet
+  PublicSubnetCidr:
     Type: String
     Default: "10.0.1.0/24"
-
-  PrivateSubnetCidrBlock:
-    Description: CIDR block for the private subnet
+  PrivateSubnetCidr:
     Type: String
     Default: "10.0.2.0/24"
+  NatEIP:
+    Type: "AWS::EC2::EIP::Id"
+  PublicSG:
+    Type: "AWS::EC2::SecurityGroup::Id"
+  PrivateSG:
+    Type: "AWS::EC2::SecurityGroup::Id"
 
 Resources:
   MyVPC:
     Type: "AWS::EC2::VPC"
     Properties:
-      CidrBlock: !Ref VpcCidrBlock
+      CidrBlock: !Ref VpcCidr
       EnableDnsHostnames: true
-      EnableDnsSupport: true
-      Tags:
-        - Key: "Name"
-          Value: "MyVPC"
 
   PublicSubnet:
     Type: "AWS::EC2::Subnet"
     Properties:
       VpcId: !Ref MyVPC
-      CidrBlock: !Ref PublicSubnetCidrBlock
-      AvailabilityZone: !Select [0, !GetAZs ""]
-      Tags:
-        - Key: "Name"
-          Value: "PublicSubnet"
+      CidrBlock: !Ref PublicSubnetCidr
+      AvailabilityZone: !Select [ 0, !GetAZs "" ]
+      MapPublicIpOnLaunch: true
 
   PrivateSubnet:
     Type: "AWS::EC2::Subnet"
     Properties:
       VpcId: !Ref MyVPC
-      CidrBlock: !Ref PrivateSubnetCidrBlock
-      AvailabilityZone: !Select [1, !GetAZs ""]
-      Tags:
-        - Key: "Name"
-          Value: "PrivateSubnet"
+      CidrBlock: !Ref PrivateSubnetCidr
+      AvailabilityZone: !Select [ 0, !GetAZs "" ]
 
   InternetGateway:
     Type: "AWS::EC2::InternetGateway"
-    Properties:
-      Tags:
-        - Key: "Name"
-          Value: "InternetGateway"
 
-  VPCGatewayAttachment:
+  GatewayAttachment:
     Type: "AWS::EC2::VPCGatewayAttachment"
     Properties:
       VpcId: !Ref MyVPC
       InternetGatewayId: !Ref InternetGateway
 
-  NatEip:
-    Type: "AWS::EC2::EIP"
+  PublicRouteTable:
+    Type: "AWS::EC2::RouteTable"
     Properties:
-      Domain: "vpc"
-      Tags:
-        - Key: "Name"
-          Value: "NatEip"
+      VpcId: !Ref MyVPC
+
+  PublicRoute:
+    Type: "AWS::EC2::Route"
+    DependsOn: GatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref InternetGateway
+
+  PrivateRouteTable:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref MyVPC
+
+  PrivateRoute:
+    Type: "AWS::EC2::Route"
+    DependsOn: NatGateway
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: "0.0.0.0/0"
+      NatGatewayId: !Ref NatGateway
 
   NatGateway:
     Type: "AWS::EC2::NatGateway"
     Properties:
+      AllocationId: !Ref NatEIP
       SubnetId: !Ref PublicSubnet
-      AllocationId: !GetAtt NatEip.AllocationId
-      Tags:
-        - Key: "Name"
-          Value: "NatGateway"
 
   PublicSecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
-      GroupDescription: "Security group for the public subnet"
+      GroupDescription: "Public Security Group"
       VpcId: !Ref MyVPC
-      Tags:
-        - Key: "Name"
-          Value: "PublicSecurityGroup"
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: "c09f6a21-b6e5-442d-ae6e-9a53e3a4da22"
-
-  PrivateSecurityGroup:
-    Type: "AWS::EC2::SecurityGroup"
-    Properties:
-      GroupDescription: "Security group for the private subnet"
-      VpcId: !Ref MyVPC
-      Tags:
-        - Key: "Name"
-          Value: "PrivateSecurityGroup"
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: "8f1c70e1-b9c9-4818-bf8c-4150d670344d"
 
   PublicSecurityGroupIngress:
     Type: "AWS::EC2::SecurityGroupIngress"
@@ -108,32 +93,43 @@ Resources:
       ToPort: 22
       CidrIp: "0.0.0.0/0"
 
-  PrivateSecurityGroupIngress:
-    Type: "AWS::EC2::SecurityGroupIngress"
+  PrivateSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
     Properties:
-      GroupId: !Ref PrivateSecurityGroup
+      GroupDescription: "Private Security Group"
+      VpcId: !Ref "PrivateSecurityGroup"
       IpProtocol: "tcp"
       FromPort: 22
       ToPort: 22
       CidrIp: "0.0.0.0/0"
-  
-Outputs:
-  VpcId:
-    Value: !Ref MyVPC
 
+
+  PrivateSecurityGroupIngress:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref PrivateSG
+      IpProtocol: "tcp"
+      FromPort: 22
+      ToPort: 22
+      CidrIp: "0.0.0.0/0"
+
+#  PrivateSecurityGroupEgress:
+#    Type: "AWS::EC2::SecurityGroupEgress"
+#    Properties:
+#      GroupId: !Ref PrivateSG
+#      IpProtocol: "tcp"
+#      FromPort: 0
+#      ToPort: 65535
+#      DestinationSecurityGroupId: !Ref PublicSG
+
+Outputs:
   PublicSubnetId:
     Value: !Ref PublicSubnet
-
   PrivateSubnetId:
     Value: !Ref PrivateSubnet
-
+  PublicSecurityGroupId:
+    Value: !Ref PublicSG
+  PrivateSecurityGroupId:
+    Value: !Ref PrivateSG
   NatGatewayId:
     Value: !Ref NatGateway
-
-  PublicSecurityGroupId:
-    Value: !Ref PublicSecurityGroup
-
-  PrivateSecurityGroupId:
-    Value: !Ref PrivateSecurityGroup
-
-
