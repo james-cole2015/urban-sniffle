@@ -107,13 +107,13 @@ Resources:
       ImageId: 'ami-0c41531b8d18cc72b' # RHEL 9
       InstanceType: t2.micro
       KeyName: my-key-pair
-      Tags: 
-        - Key: "Name"
-          Value: "Public_RHEL_9"
-        - Key: "Environment"
-          Value: "cloudformation"
       NetworkInterfaces:
         - DeviceIndex: '0'
           SubnetId: !Ref PublicSubnet
           GroupSet:
             - !Ref SecurityGroup
+  PublicDNSName:
+    Value: !GetAtt EC2Instance.PublicDnsName
+    Description: Public DNS of the EC2 instance
+    Export:
+      Name: PublicDNS
