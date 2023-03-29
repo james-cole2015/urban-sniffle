@@ -82,3 +82,34 @@ Resources:
     Properties:
       SubnetId: !Ref PublicSubnet
       AllocationId: !GetAtt ElasticIP.AllocationId
+  SecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupName: rhel9-security-group
+      GroupDescription: Security group for RHEL 9 instance
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol
+        - FromPort: 22
+          ToPort: 22
+          IpProtocol: tcp
+          CidrIp: 0.0.0.0/0
+        - FromPort: 80
+          ToPort: 80
+          IpProtocol: tcp
+          CidrIp: 0.0.0.0/0
+        - FromPort: 443
+          ToPort: 443
+          IpProtocol: tcp
+          CidrIp: 0.0.0.0/0
+  RHEL9Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: ami-0a4f9c9e9acdc6e55 # RHEL 9
+      InstanceType: t2.micro
+      KeyName: my-key-pair
+      NetworkInterfaces:
+        - DeviceIndex: '0'
+          SubnetId: !Ref PublicSubnet
+          GroupSet:
+            - !Ref SecurityGroup
