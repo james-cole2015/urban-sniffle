@@ -108,17 +108,17 @@ Resources:
       InstanceType: t2.micro
       KeyName: my-key-pair
       Tags: 
-        - Key: "Name"
-          Value: "Public RHEL 9"
-        - Key: "Environment"
-          Value: "cloudformation"
+        - Key: Name
+          Value: Public RHEL 9
+        - Key: Environment
+          Value: cloudformation
       NetworkInterfaces:
         - DeviceIndex: '0'
           SubnetId: !Ref PublicSubnet
           GroupSet:
             - !Ref SecurityGroup
-  MyOutput:
-    Description: The public hostname of the RHEL 9 instance
-    Value: !GetAtt RHEL9Instance.PublicDnsName
+  PublicDNSName:
+    Value: !GetAtt EC2Instance.PublicDnsName
+    Description: Public DNS of the EC2 instance
     Export:
-      Name: MyInstancePublicHostname
+      Name: PublicDNS
