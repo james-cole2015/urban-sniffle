@@ -117,8 +117,3 @@ Resources:
           SubnetId: !Ref PublicSubnet
           GroupSet:
             - !Ref SecurityGroup
-  PublicDNSName:
-    Value: !GetAtt EC2Instance.PublicDnsName
-    Description: Public DNS of the EC2 instance
-    Export:
-      Name: PublicDNS
