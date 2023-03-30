@@ -118,3 +118,18 @@ Resources:
           GroupSet:
             - !Ref SecurityGroup
           AssociatePublicIpAddress: "true"
+  RHEL9InstancePrivate:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: 'ami-0c41531b8d18cc72b' # RHEL 9
+      InstanceType: t2.micro
+      KeyName: my-key-pair
+      Tags:
+        - Key: Name
+          Value: Public RHEL Instance
+      NetworkInterfaces:
+        - DeviceIndex: '0'
+          SubnetId: !Ref PrivateSubnet
+          GroupSet:
+            - !Ref SecurityGroup
+          AssociatePublicIpAddress: "true"
