@@ -113,6 +113,10 @@ Resources:
       Tags:
         - Key: Name
           Value: Public RHEL Instance
+        - Key: Environment
+          Value: aws_security_labs
+        - Key: Week
+          Value: week-01
       NetworkInterfaces:
         - DeviceIndex: '0'
           SubnetId: !Ref PublicSubnet
@@ -129,6 +133,10 @@ Resources:
       Tags:
         - Key: Name
           Value: Private RHEL Instance
+        - Key: Environment
+          Value: aws_security_labs
+        - Key: Week
+          Value: week-01
       NetworkInterfaces:
         - DeviceIndex: '0'
           SubnetId: !Ref PrivateSubnet
