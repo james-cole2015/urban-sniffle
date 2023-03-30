@@ -108,8 +108,7 @@ Resources:
     Properties:
       ImageId: 'ami-0c41531b8d18cc72b' # RHEL 9
       InstanceType: t2.micro
-      IamInstanceProfile:
-        Arn: !GetAtt MyIAMRole.Arn
+      IamInstanceProfile: !Ref InstanceProfile # Add this line
       KeyName: my-key-pair
       Tags:
         - Key: Name
@@ -125,8 +124,7 @@ Resources:
     Properties:
       ImageId: 'ami-0c41531b8d18cc72b' # RHEL 9
       InstanceType: t2.micro
-      IamInstanceProfile:
-        Arn: !GetAtt MyIAMRole.Arn
+      IamInstanceProfile: !Ref InstanceProfile # Add this line
       KeyName: my-key-pair
       Tags:
         - Key: Name
@@ -137,7 +135,13 @@ Resources:
           GroupSet:
             - !Ref SecurityGroup
           AssociatePublicIpAddress: "true"
-  MyIAMRole:
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: my-instance-profile
+      Roles:
+        - !Ref EC2Role
+  EC2Role:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -145,8 +149,12 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: ec2.amazonaws.com
-            Action: sts:AssumeRole
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      RoleName: my-ec2-role
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
         - arn:aws:iam::aws:policy/AmazonSSMPatchAssociation
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
