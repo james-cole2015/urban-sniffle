@@ -126,7 +126,7 @@ Resources:
       KeyName: my-key-pair
       Tags:
         - Key: Name
-          Value: Public RHEL Instance
+          Value: Private RHEL Instance
       NetworkInterfaces:
         - DeviceIndex: '0'
           SubnetId: !Ref PrivateSubnet
