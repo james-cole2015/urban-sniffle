@@ -162,7 +162,7 @@ Resources:
             Action:
               - sts:AssumeRole
       Path: /
-      RoleName: my-ec2-role
+      RoleName: my-ec2-role-for-ssm
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonSSMPatchAssociation
         - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
