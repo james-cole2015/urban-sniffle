@@ -108,7 +108,7 @@ Resources:
     Properties:
       ImageId: 'ami-0c41531b8d18cc72b' # RHEL 9
       InstanceType: t2.micro
-      IamInstanceProfile: !Ref InstanceProfile # Add this line
+      IamInstanceProfile: !Ref InstanceProfile
       KeyName: my-key-pair
       Tags:
         - Key: Name
@@ -118,7 +118,7 @@ Resources:
         - Key: Week
           Value: week-01
       UserData: 
-        Fn::Base64: !Sub | 
+        Fn::Base64: !Sub | ## this installs the systems manager agent
           #!/bin/bash -xe
           sudo dnf install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
           sudo systemctl enable amazon-ssm-agent
@@ -135,12 +135,12 @@ Resources:
       ImageId: 'ami-0c41531b8d18cc72b' # RHEL 9
       InstanceType: t2.micro
       UserData: 
-        Fn::Base64: !Sub | 
+        Fn::Base64: !Sub | ## this installs the systems manager agent
           #!/bin/bash -xe
           sudo dnf install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
           sudo systemctl enable amazon-ssm-agent
           sudo systemctl start amazon-ssm-agent
-      IamInstanceProfile: !Ref InstanceProfile # Add this line
+      IamInstanceProfile: !Ref InstanceProfile 
       KeyName: my-key-pair
       Tags:
         - Key: Name
