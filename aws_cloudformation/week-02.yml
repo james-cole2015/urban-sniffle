@@ -78,3 +78,24 @@ Resources:
       Tags:
         - Key: Name
           Value: "RHEL Instance"
+Outputs:
+  Week02Bucket00ID:
+    Value: !Ref Week02Bucket00
+  Week02Bucket01ID:
+    Value: !Ref Week02Bucket01
+  Week02VPCID:
+    Value: !Ref Week02VPC
+  PublicSubnetID:
+    Value: !Ref PublicSubnet
+  InternetGatewayID:
+    Value: !Ref InternetGateway
+  VPCGatewayAttachmentID:
+    Value: !Ref VPCGatewayAttachment
+  PublicRouteTableID:
+    Value: !Ref PublicRouteTable
+  PublicRouteID:
+    Value: !Ref PublicRoute
+  SubnetRouteTableAssociationID:
+    Value: !Ref SubnetRouteTableAssociation
+  LinuxInstanceID: 
+    Value: !Ref LinuxInstance
