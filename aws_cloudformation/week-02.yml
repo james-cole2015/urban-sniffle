@@ -1,14 +1,23 @@
+Parameters:
+  RandomNumber:
+    Type: "Number"
+    Description: "A random number used to generate unique bucket names"
+    
+  KeyName:
+    Type: "AWS::EC2::KeyPair::KeyName"
+    Description: "Name of an existing EC2 KeyPair to enable SSH access to the instances"
+
 Resources:
   Week02Bucket00:
     Type: "AWS::S3::Bucket"
     Properties:
-      BucketName: "week-02-bucket00"
+      BucketName: !Sub "week-02_bucket00-${RandomNumber}"
       AccessControl: "PublicRead"
       
   Week02Bucket01:
     Type: "AWS::S3::Bucket"
     Properties:
-      BucketName: "week-02-bucket01"
+      BucketName: !Sub "week-02_bucket01-${RandomNumber}"
       AccessControl: "PublicRead"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
@@ -16,11 +25,56 @@ Resources:
         IgnorePublicAcls: false
         RestrictPublicBuckets: false
 
-Outputs:
-  Week02Bucket00Id:
-    Value: !Ref Week02Bucket00
-    Description: "ID for the week-02_bucket00 S3 bucket"
-    
-  Week02Bucket01Id:
-    Value: !Ref Week02Bucket01
-    Description: "ID for the week-02_bucket01 S3 bucket"
+  Week02VPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: "15.0.0.0/16"
+      Tags:
+        - Key: Name
+          Value: "Week-02 VPC"
+
+  PublicSubnet:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      VpcId: !Ref Week02VPC
+      CidrBlock: "15.0.1.0/24"
+      MapPublicIpOnLaunch: true
+
+  InternetGateway:
+    Type: "AWS::EC2::InternetGateway"
+
+  VPCGatewayAttachment:
+    Type: "AWS::EC2::VPCGatewayAttachment"
+    Properties:
+      VpcId: !Ref Week02VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicRouteTable:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref Week02VPC
+
+  PublicRoute:
+    Type: "AWS::EC2::Route"
+    DependsOn: "VPCGatewayAttachment"
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref InternetGateway
+
+  SubnetRouteTableAssociation:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  LinuxInstance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: "t2.micro"
+      ImageId: "ami-0c94855ba95c71c99" # RHEL 9 AMI ID
+      KeyName: !Ref KeyName
+      SubnetId: !Ref PublicSubnet
+      Tags:
+        - Key: Name
+          Value: "RHEL Instance"
