@@ -11,13 +11,13 @@ Resources:
   Week02Bucket00:
     Type: "AWS::S3::Bucket"
     Properties:
-      BucketName: !Sub "week-02_bucket00-${RandomNumber}"
+      BucketName: !Sub "week-02-bucket00-${RandomNumber}"
       AccessControl: "PublicRead"
       
   Week02Bucket01:
     Type: "AWS::S3::Bucket"
     Properties:
-      BucketName: !Sub "week-02_bucket01-${RandomNumber}"
+      BucketName: !Sub "week-02-bucket01-${RandomNumber}"
       AccessControl: "PublicRead"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
