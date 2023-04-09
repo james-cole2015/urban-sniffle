@@ -72,12 +72,57 @@ Resources:
     Type: "AWS::EC2::Instance"
     Properties:
       InstanceType: "t2.micro"
-      ImageId: "ami-0c94855ba95c71c99" # RHEL 9 AMI ID
+      ImageId: "ami-0c41531b8d18cc72b" # RHEL 9 AMI ID
       KeyName: !Ref KeyName
       SubnetId: !Ref PublicSubnet
       Tags:
         - Key: Name
-          Value: "RHEL Instance"
+          Value: " Week 02 RHEL Instance"
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          echo "Insolence? We are pirates. We don’t even know what that means." > /var/www/html/index.html
+          systemctl start httpd 
+          yum install wget -y 
+          wget https://github.com/mingrammer/flog/releases/download/v0.4.3/flog_0.4.3_linux_amd64.tar.gz
+          tar -xvf flog_0.4.3_linux_amd64.tar.gz -C /usr/bin
+          touch totally_real_logs
+          flog > totally_real_logs
+
+  EC2InstanceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: CloudWatchAgentServerPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                  - 'cloudwatch:PutMetricData'
+                  - "ec2:DescribeTags"
+                  - "logs:DescribeLogStreams"
+                  - "logs:DescribeLogGroups"
+                Resource: '*'
+            Statement:
+              - Effect: Allow
+                Action:
+                - "ssm:GetParameter"
+                - "ssm:PutParameter"
+                Resource: 'arn:aws:ssm:*:*:parameter/AmazonCloudWatch-*'
 Outputs:
   Week02Bucket00ID:
     Value: !Ref Week02Bucket00
@@ -99,3 +144,5 @@ Outputs:
     Value: !Ref SubnetRouteTableAssociation
   LinuxInstanceID: 
     Value: !Ref LinuxInstance
+  IamInstanceProfileID:
+    Value: !Ref EC2InstanceRole
