@@ -1,5 +1,19 @@
 ---
+Parameters:
+  RandomNumber:
+    Type: "Number"
+    Description: "A random number used to generate unique bucket names"
+  KeyName:
+    Type: "AWS::EC2::KeyPair::KeyName"
+    Description: "Name of an existing EC2 KeyPair to enable SSH access to the instances"
+
 Resources:
+Resources:
+  Week02Bucket00:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "week-02-bucket00-${RandomNumber}"
+      AccessControl: "PublicRead"
   VPC:
     Type: 'AWS::EC2::VPC'
     Properties:
@@ -57,33 +71,10 @@ Resources:
     Properties:
       SubnetId: !Ref PublicSubnet
       RouteTableId: !Ref PublicRouteTable
-  PrivateRouteTable:
-    Type: 'AWS::EC2::RouteTable'
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: private-route-table-00
-  PrivateRoute:
-    Type: 'AWS::EC2::Route'
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable
-      DestinationCidrBlock: '0.0.0.0/0'
-      NatGatewayId: !Ref NatGateway
-  PrivateSubnetRouteTableAssociation:
-    Type: 'AWS::EC2::SubnetRouteTableAssociation'
-    Properties:
-      SubnetId: !Ref PrivateSubnet
-      RouteTableId: !Ref PrivateRouteTable
   ElasticIP:
     Type: 'AWS::EC2::EIP'
     Properties:
       Domain: vpc
-  NatGateway:
-    Type: 'AWS::EC2::NatGateway'
-    Properties:
-      SubnetId: !Ref PublicSubnet
-      AllocationId: !GetAtt ElasticIP.AllocationId
   SecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -109,20 +100,21 @@ Resources:
       ImageId: 'ami-0c41531b8d18cc72b' # RHEL 9
       InstanceType: t2.micro
       IamInstanceProfile: !Ref InstanceProfile
-      KeyName: my-key-pair
+      KeyName: !Ref KeyName 
       Tags:
         - Key: Name
-          Value: Public RHEL Instance
+          Value: Week-02 RHEL Instance
         - Key: platform 
           Value: aws_security_labs
         - Key: Week
-          Value: week-01
+          Value: week-02
       UserData: 
-        Fn::Base64: !Sub | ## this installs the systems manager agent
+        Fn::Base64: !Sub | ## this installs the systems manager agent, the cloudwatch agent, an http server, and the fake log generator
           #!/bin/bash -xe
           sudo dnf install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
           sudo systemctl enable amazon-ssm-agent
           sudo systemctl start amazon-ssm-agent
+          yum install httpd -y
           echo "Insolence? We are pirates. We don’t even know what that means." > /var/www/html/index.html
           systemctl start httpd 
           yum install wget -y 
