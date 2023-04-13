@@ -46,10 +46,3 @@ Resources:
                   if 'environment' not in tags or tags['environment'] != 'aws-security-labs':
                       s3.put_object_tagging(Bucket=bucket_name, Key=object_key,
                                             Tagging={'TagSet': [{'Key': 'environment', 'Value': 'aws-security-labs'}]})
-  LambdaFunctionPermission:
-    Type: 'AWS::Lambda::Permission'
-    Properties:
-      Action: 'lambda:InvokeFunction'
-      FunctionName: !Ref LambdaFunction
-      Principal: 's3.amazonaws.com'
-      SourceArn: 'arn:aws:s3:::aws-security-labs'
