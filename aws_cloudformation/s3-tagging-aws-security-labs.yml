@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  LambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: 'lambda-execution-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Service: 'lambda.amazonaws.com'
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: 'S3ObjectTaggingPolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: 'Allow'
+                Action:
+                  - 's3:GetObjectTagging'
+                  - 's3:PutObjectTagging'
+                Resource: 'arn:aws:s3:::aws-security-labs/*'
+  LambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: 's3-tagging-function'
+      Runtime: 'python3.8'
+      Handler: 'lambda_function.lambda_handler'
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+
+          def lambda_handler(event, context):
+              s3 = boto3.client('s3')
+              for record in event['Records']:
+                  bucket_name = record['s3']['bucket']['name']
+                  object_key = record['s3']['object']['key']
+                  try:
+                      response = s3.get_object_tagging(Bucket=bucket_name, Key=object_key)
+                      tags = {tag['Key']: tag['Value'] for tag in response['TagSet']}
+                  except:
+                      tags = {}
+                  if 'environment' not in tags or tags['environment'] != 'aws-security-labs':
+                      s3.put_object_tagging(Bucket=bucket_name, Key=object_key,
+                                            Tagging={'TagSet': [{'Key': 'environment', 'Value': 'aws-security-labs'}]})
