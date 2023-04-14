@@ -1,0 +1,116 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Creates a VPC with a public and private subnet'
+
+Resources:
+  # Create the VPC
+  MyVPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      CidrBlock: '10.0.0.0/16'
+      Tags: 
+        - Key: 'Name'
+          Value: "Jasper's VPC"
+        - Key: "cfn_template_name"
+          Value: "base-infrastructure"
+
+  # Create the public subnet
+  PublicSubnet:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      AvailabilityZone: !Select [0, !GetAZs '']
+      CidrBlock: '10.0.1.0/24'
+      MapPublicIpOnLaunch: true 
+      VpcId: !Ref MyVPC
+      Tags: 
+        - Key: "cfn_template_name"
+          Value: "base-infrastructure"
+        - Key: "Name"
+          Value: "public-sn"
+
+  # Create the private subnet
+  PrivateSubnet:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      AvailabilityZone: !Select [1, !GetAZs '']
+      CidrBlock: '10.0.2.0/24'
+      VpcId: !Ref MyVPC
+      Tags: 
+        - Key: "cfn_template_name"
+          Value: "base-infrastructure"
+        - Key: "Name"
+          Value: "private-sn"
+
+  # Create the public route table
+  PublicRouteTable:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref MyVPC
+      Tags: 
+        - Key: "cfn_template_name"
+          Value: "base-infrastructure"
+
+  # Create the private route table
+  PrivateRouteTable:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref MyVPC
+      Tags: 
+        - Key: "cfn_template_name"
+          Value: "base-infrastructure"
+
+  # Associate the public subnet with the public route table
+  PublicSubnetRouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  # Associate the private subnet with the private route table
+  PrivateSubnetRouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Ref PrivateSubnet
+      RouteTableId: !Ref PrivateRouteTable
+
+  # Create the internet gateway
+  InternetGateway:
+    Type: 'AWS::EC2::InternetGateway'
+
+  # Attach the internet gateway to the VPC
+  InternetGatewayAttachment:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      VpcId: !Ref MyVPC
+      InternetGatewayId: !Ref InternetGateway
+
+  # Create the default route in the public route table
+  PublicRoute:
+    Type: 'AWS::EC2::Route'
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: '0.0.0.0/0'
+      GatewayId: !Ref InternetGateway
+
+  # create role for ssm 
+  EC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      RoleName: my-ec2-role-for-ssm
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMPatchAssociation
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - arn:aws:iam::aws:policy/CloudWatchAgentAdminPolicy
