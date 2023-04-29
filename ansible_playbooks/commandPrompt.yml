@@ -6,7 +6,7 @@
      - name: insert command prompt change to bashrc
        lineinfile:
          path: /home/ubuntu/.bashrc
-         line: PS1="\e[0;37m[VAULT NODE@\h \W]\$ \e[0m"
+         line: PS1="\e[1;37m[VAULT NODE@\h \W]\$ \e[0m"
      - name: source bashrc
        shell: source /home/ubuntu/.bashrc && source ~/.bashrc
        args:
